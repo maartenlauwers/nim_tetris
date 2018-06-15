@@ -1,0 +1,21 @@
+{"compile":[
+["/Users/mlauwers/Downloads/nim/src/nimcache/tetris_tetris.c", "clang -c  -w  -I/usr/local/Cellar/nim/0.18.0_1/nim/lib -o /Users/mlauwers/Downloads/nim/src/nimcache/tetris_tetris.o /Users/mlauwers/Downloads/nim/src/nimcache/tetris_tetris.c"]
+],
+"link":[
+"/Users/mlauwers/Downloads/nim/src/nimcache/tetris_tetris.o",
+"/Users/mlauwers/Downloads/nim/src/nimcache/stdlib_system.o",
+"/Users/mlauwers/Downloads/nim/src/nimcache/stdlib_random.o",
+"/Users/mlauwers/Downloads/nim/src/nimcache/stdlib_times.o",
+"/Users/mlauwers/Downloads/nim/src/nimcache/stdlib_strutils.o",
+"/Users/mlauwers/Downloads/nim/src/nimcache/stdlib_parseutils.o",
+"/Users/mlauwers/Downloads/nim/src/nimcache/stdlib_math.o",
+"/Users/mlauwers/Downloads/nim/src/nimcache/stdlib_algorithm.o",
+"/Users/mlauwers/Downloads/nim/src/nimcache/stdlib_posix.o",
+"/Users/mlauwers/Downloads/nim/src/nimcache/sdl2_sdl2.o",
+"/Users/mlauwers/Downloads/nim/src/nimcache/stdlib_macros.o",
+"/Users/mlauwers/Downloads/nim/src/nimcache/stdlib_unsigned.o",
+"/Users/mlauwers/Downloads/nim/src/nimcache/sdl2_gfx.o",
+"/Users/mlauwers/Downloads/nim/src/nimcache/sdl2_image.o"
+],
+"linkcmd": "clang   -o /Users/mlauwers/Downloads/nim/src/tetris  /Users/mlauwers/Downloads/nim/src/nimcache/tetris_tetris.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_system.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_random.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_times.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_strutils.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_parseutils.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_math.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_algorithm.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_posix.o /Users/mlauwers/Downloads/nim/src/nimcache/sdl2_sdl2.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_macros.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_unsigned.o /Users/mlauwers/Downloads/nim/src/nimcache/sdl2_gfx.o /Users/mlauwers/Downloads/nim/src/nimcache/sdl2_image.o  -lm   -ldl"
+}

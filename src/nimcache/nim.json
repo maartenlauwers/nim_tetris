@@ -1,0 +1,26 @@
+{"compile":[
+["/Users/mlauwers/Downloads/nim/src/nimcache/nim_nim.c", "clang -c  -w  -I/usr/local/Cellar/nim/0.18.0_1/nim/lib -o /Users/mlauwers/Downloads/nim/src/nimcache/nim_nim.o /Users/mlauwers/Downloads/nim/src/nimcache/nim_nim.c"],
+["/Users/mlauwers/Downloads/nim/src/nimcache/stdlib_system.c", "clang -c  -w  -I/usr/local/Cellar/nim/0.18.0_1/nim/lib -o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_system.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_system.c"],
+["/Users/mlauwers/Downloads/nim/src/nimcache/sdl2_sdl2.c", "clang -c  -w  -I/usr/local/Cellar/nim/0.18.0_1/nim/lib -o /Users/mlauwers/Downloads/nim/src/nimcache/sdl2_sdl2.o /Users/mlauwers/Downloads/nim/src/nimcache/sdl2_sdl2.c"],
+["/Users/mlauwers/Downloads/nim/src/nimcache/stdlib_macros.c", "clang -c  -w  -I/usr/local/Cellar/nim/0.18.0_1/nim/lib -o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_macros.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_macros.c"],
+["/Users/mlauwers/Downloads/nim/src/nimcache/stdlib_unsigned.c", "clang -c  -w  -I/usr/local/Cellar/nim/0.18.0_1/nim/lib -o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_unsigned.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_unsigned.c"],
+["/Users/mlauwers/Downloads/nim/src/nimcache/stdlib_strutils.c", "clang -c  -w  -I/usr/local/Cellar/nim/0.18.0_1/nim/lib -o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_strutils.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_strutils.c"],
+["/Users/mlauwers/Downloads/nim/src/nimcache/stdlib_parseutils.c", "clang -c  -w  -I/usr/local/Cellar/nim/0.18.0_1/nim/lib -o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_parseutils.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_parseutils.c"],
+["/Users/mlauwers/Downloads/nim/src/nimcache/stdlib_math.c", "clang -c  -w  -I/usr/local/Cellar/nim/0.18.0_1/nim/lib -o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_math.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_math.c"],
+["/Users/mlauwers/Downloads/nim/src/nimcache/stdlib_algorithm.c", "clang -c  -w  -I/usr/local/Cellar/nim/0.18.0_1/nim/lib -o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_algorithm.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_algorithm.c"],
+["/Users/mlauwers/Downloads/nim/src/nimcache/sdl2_gfx.c", "clang -c  -w  -I/usr/local/Cellar/nim/0.18.0_1/nim/lib -o /Users/mlauwers/Downloads/nim/src/nimcache/sdl2_gfx.o /Users/mlauwers/Downloads/nim/src/nimcache/sdl2_gfx.c"]
+],
+"link":[
+"/Users/mlauwers/Downloads/nim/src/nimcache/nim_nim.o",
+"/Users/mlauwers/Downloads/nim/src/nimcache/stdlib_system.o",
+"/Users/mlauwers/Downloads/nim/src/nimcache/sdl2_sdl2.o",
+"/Users/mlauwers/Downloads/nim/src/nimcache/stdlib_macros.o",
+"/Users/mlauwers/Downloads/nim/src/nimcache/stdlib_unsigned.o",
+"/Users/mlauwers/Downloads/nim/src/nimcache/stdlib_strutils.o",
+"/Users/mlauwers/Downloads/nim/src/nimcache/stdlib_parseutils.o",
+"/Users/mlauwers/Downloads/nim/src/nimcache/stdlib_math.o",
+"/Users/mlauwers/Downloads/nim/src/nimcache/stdlib_algorithm.o",
+"/Users/mlauwers/Downloads/nim/src/nimcache/sdl2_gfx.o"
+],
+"linkcmd": "clang   -o /Users/mlauwers/Downloads/nim/src/nim  /Users/mlauwers/Downloads/nim/src/nimcache/nim_nim.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_system.o /Users/mlauwers/Downloads/nim/src/nimcache/sdl2_sdl2.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_macros.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_unsigned.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_strutils.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_parseutils.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_math.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_algorithm.o /Users/mlauwers/Downloads/nim/src/nimcache/sdl2_gfx.o  -lm   -ldl"
+}
