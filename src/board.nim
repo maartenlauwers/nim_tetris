@@ -46,7 +46,7 @@ const SHAPE_I: TetronimoTemplate = [
 ]
 
 const SHAPE_J: TetronimoTemplate = [
-    [(1'u,0'u),(1'u,1'u),(1'u,2'u),(0'u,2'u)],
+    [(1'u,0'u),(2'u,0'u),(1'u,1'u),(1'u,2'u)],
     [(0'u,1'u),(1'u,1'u),(2'u,1'u),(2'u,2'u)],
     [(0'u,2'u),(1'u,0'u),(1'u,1'u),(1'u,2'u)],
     [(0'u,0'u),(0'u,1'u),(1'u,1'u),(2'u,1'u)]
@@ -56,7 +56,7 @@ const SHAPE_L: TetronimoTemplate = [
     [(0'u,0'u),(1'u,0'u),(1'u,1'u),(1'u,2'u)],
     [(0'u,1'u),(1'u,1'u),(2'u,1'u),(2'u,0'u)],
     [(1'u,0'u),(1'u,1'u),(1'u,2'u),(2'u,2'u)],
-    [(0'u,1'u),(0'u,2'u),(1'u,1'u),(1'u,2'u)]
+    [(0'u,1'u),(0'u,2'u),(1'u,1'u),(2'u,1'u)]
 ]
 
 const SHAPE_O: TetronimoTemplate = [
@@ -148,20 +148,23 @@ proc applyGravity(board: var Board, tetronimo: var Tetronimo) =
         for colIndex in 0..BOARD_WIDTH-1:
             board[rowIndex][colIndex] = gray
 
-    # Drop all blocks
-    # Reverse iteration, otherwise every iteration will re-drop the blocks dropped from the last line
-    # -2 because we can ignore the last line
-    for rowIndex in countDown(BOARD_HEIGHT-2, 0):
-        for colIndex in 0..BOARD_WIDTH-1:
-            # If there is no block at the current position we have nothing to do
-            if not isBlockAt(board, uint(colIndex), uint(rowIndex)):
-                discard 
-            else:
-                if not blockBelongsToTetronimo(tetronimo, uint(colIndex), (uint)rowIndex):
-                    let nextRowIndex = rowIndex + 1
-                    if not isBlockAt(board, uint(colIndex), uint(nextRowIndex)):
-                        board[nextRowIndex][colIndex] = board[rowIndex][colIndex]
-                        board[rowIndex][colIndex] = gray
+    # Drop all blocks one level for each cleared row.
+    # Do not blindly drop a block whenever there is space beneath, because then parts of shapes
+    # will keep dropping until they hit the bottom-most block.
+
+    # TODO: Ideally sorted high to low for performance
+    for fullRowIndex in fullRowIndices:
+        for rowIndex in countDown(fullRowIndex-1, 0):
+            for colIndex in 0..BOARD_WIDTH-1:
+                # If there is no block at the current position we have nothing to do
+                if not isBlockAt(board, uint(colIndex), uint(rowIndex)):
+                    discard 
+                else:
+                    if not blockBelongsToTetronimo(tetronimo, uint(colIndex), (uint)rowIndex) or not canDropTetronimo(board, tetronimo):
+                        let nextRowIndex = rowIndex + 1
+                        if not isBlockAt(board, uint(colIndex), uint(nextRowIndex)):
+                            board[nextRowIndex][colIndex] = board[rowIndex][colIndex]
+                            board[rowIndex][colIndex] = gray
 
     # Also update the y position of our active tetronimo
     if canDropTetronimo(board, tetronimo):

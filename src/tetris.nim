@@ -1,5 +1,4 @@
 include board
-include graphics
 
 # https://hookrace.net/blog/writing-a-2d-platform-game-in-nim-with-sdl2/
 
@@ -14,7 +13,7 @@ var
   activeTetronimo: Tetronimo
   immediateMode: bool
 
-window = createWindow("Tetris", 100, 100, 340, 680, SDL_WINDOW_SHOWN)
+window = createWindow("Tetris", 100, 100, 344, 680, SDL_WINDOW_SHOWN)
 render = createRenderer(window, -1, Renderer_Accelerated or Renderer_PresentVsync or Renderer_TargetTexture)
 let texture = render.loadTexture("tetris.png")
 
@@ -69,7 +68,7 @@ activeTetronimo = insertTetronimo(board)
 
 proc drawBlock(color: BlockColor, x,y: uint) =
   var source = getBlockTexture(color)
-  var dest = rect(BLOCK_WIDTH * cint(x) + (cint(x) * cint(MARGIN)), BLOCK_HEIGHT * cint(y) + (cint(y) * cint(MARGIN)), BLOCK_WIDTH, BLOCK_HEIGHT)
+  var dest = rect(BLOCK_WIDTH * cint(x) + (cint(x) * cint(MARGIN)) + 2, BLOCK_HEIGHT * cint(y) + (cint(y) * cint(MARGIN)), BLOCK_WIDTH, BLOCK_HEIGHT)
   render.copyEx(texture, source, dest, angle = 0.0, center = nil, flip = SDL_FLIP_NONE)
 
 proc drawBoard(board: Board) =
