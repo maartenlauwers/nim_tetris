@@ -3,7 +3,7 @@
 /* The generated code is subject to the original license. */
 /* Compiled for: MacOSX, amd64, clang */
 /* Command for C compiler:
-   clang -c  -w  -I/usr/local/Cellar/nim/0.18.0_1/nim/lib -o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_algorithm.o /Users/mlauwers/Downloads/nim/src/nimcache/stdlib_algorithm.c */
+   clang -c  -w  -I/usr/local/Cellar/nim/0.18.0_1/nim/lib -o /Users/mlauwers/Development/nim/nim_tetris/src/nimcache/stdlib_algorithm.o /Users/mlauwers/Development/nim/nim_tetris/src/nimcache/stdlib_algorithm.c */
 #define NIM_NEW_MANGLING_RULES
 #define NIM_INTBITS 64
 

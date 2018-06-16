@@ -3,6 +3,7 @@ include graphics
 
 # https://hookrace.net/blog/writing-a-2d-platform-game-in-nim-with-sdl2/
 
+import times
 import sdl2, sdl2/gfx, sdl2/image
 discard sdl2.init(INIT_EVERYTHING)
 
@@ -11,7 +12,6 @@ var
   render: RendererPtr
   board: Board
   activeTetronimo: Tetronimo
-  activeRotation: TetronimoRotation
 
 window = createWindow("Tetris", 100, 100, 320, 640, SDL_WINDOW_SHOWN)
 render = createRenderer(window, -1, Renderer_Accelerated or Renderer_PresentVsync or Renderer_TargetTexture)
@@ -41,7 +41,6 @@ board = [
 ]
 
 activeTetronimo = newTetronimo()
-activeRotation = R0
 
 proc getBlockTexture(color: BlockColor): Rect =
   case color
@@ -63,7 +62,7 @@ proc getBlockTexture(color: BlockColor): Rect =
     result = rect(32, 64, BLOCK_WIDTH, BLOCK_HEIGHT)
 
 # Prep game
-activeTetronimo = insertShape(board)
+activeTetronimo = insertTetronimo(board)
 
 proc drawBlock(color: BlockColor, x,y: uint) =
   var source = getBlockTexture(color)
@@ -76,20 +75,45 @@ proc drawBoard(board: Board) =
       let b = board[rowIndex][colIndex]
       drawBlock(b, uint(colIndex), uint(rowIndex))
 
+proc handleInput(key: Scancode) =
+  if key == SDL_SCANCODE_UP:
+    let newRotation = rotateRight(activeTetronimo)
+    performRotation(board, activeTetronimo, newRotation)
+  elif key == SDL_SCANCODE_DOWN:
+    let newRotation = rotateLeft(activeTetronimo)
+    performRotation(board, activeTetronimo, newRotation)
+  elif key == SDL_SCANCODE_RIGHT:
+    moveRight(board, activeTetronimo)
+  elif key == SDL_SCANCODE_LEFT:
+    moveLeft(board, activeTetronimo)
+  elif key == SDL_SCANCODE_SPACE:
+    echo "Dropping blocks"
+
 var
-  evt = sdl2.defaultEvent
+  event = sdl2.defaultEvent
   runGame = true
   fpsman: FpsManager
+  totalDelta: float = 0
 fpsman.init
 
-
 while runGame:
-  while pollEvent(evt):
-    if evt.kind == QuitEvent:
+  while pollEvent(event):
+    case event.kind
+    of QuitEvent:
       runGame = false
       break
+    of KeyUp:
+      handleInput(event.key.keysym.scancode)
+    else:
+      break
 
-  let dt = fpsman.getFramerate() / 1000
+  let dt = fpsman.getFramerate() / 1000 
+  totalDelta = totalDelta + dt
+  if totalDelta >= 0.5:
+    totalDelta = 0
+    applyGravity(board, activeTetronimo)
+    if shouldGenerateNextTetronimo(board, activeTetronimo):
+      activeTetronimo = insertTetronimo(board)
 
   render.setDrawColor 110,132,174,255
   render.clear
