@@ -3,6 +3,8 @@ import random
 const BOARD_WIDTH: uint = 10
 const BOARD_HEIGHT: uint = 20
 
+const MARGIN: uint = 2
+
 const BLOCK_WIDTH = 32
 const BLOCK_HEIGHT = 32
 
@@ -25,7 +27,7 @@ type
     TetronimoTemplate = array[0..3, array[0..3, tuple[x,y: uint]]]
 
 type
-    Tetronimo = tuple[shape: TetronimoTemplate, position: tuple[x,y: uint], rotation: TetronimoRotation]
+    Tetronimo = tuple[shape: TetronimoTemplate, position: tuple[x,y: uint], rotation: TetronimoRotation, color: BlockColor]
 
 type
     Board = array[0..19, array[0..9, BlockColor]]
@@ -37,10 +39,52 @@ type
     ShapePosition = tuple[x,y: uint]
 
 const SHAPE_I: TetronimoTemplate = [
-    [(0'u,0'u),(0'u,1'u),(0'u,2'u),(0'u,3'u)],
-    [(0'u,0'u),(1'u,0'u),(2'u,0'u),(3'u,0'u)],
-    [(0'u,0'u),(0'u,1'u),(0'u,2'u),(0'u,3'u)],
-    [(0'u,0'u),(1'u,0'u),(2'u,0'u),(3'u,0'u)]
+    [(1'u,0'u),(1'u,1'u),(1'u,2'u),(1'u,3'u)],
+    [(0'u,1'u),(1'u,1'u),(2'u,1'u),(3'u,1'u)],
+    [(2'u,0'u),(2'u,1'u),(2'u,2'u),(2'u,3'u)],
+    [(0'u,2'u),(1'u,2'u),(2'u,2'u),(3'u,2'u)]
+]
+
+const SHAPE_J: TetronimoTemplate = [
+    [(1'u,0'u),(1'u,1'u),(1'u,2'u),(0'u,2'u)],
+    [(0'u,1'u),(1'u,1'u),(2'u,1'u),(2'u,2'u)],
+    [(0'u,2'u),(1'u,0'u),(1'u,1'u),(1'u,2'u)],
+    [(0'u,0'u),(0'u,1'u),(1'u,1'u),(2'u,1'u)]
+]
+
+const SHAPE_L: TetronimoTemplate = [
+    [(0'u,0'u),(1'u,0'u),(1'u,1'u),(1'u,2'u)],
+    [(0'u,1'u),(1'u,1'u),(2'u,1'u),(2'u,0'u)],
+    [(1'u,0'u),(1'u,1'u),(1'u,2'u),(2'u,2'u)],
+    [(0'u,1'u),(0'u,2'u),(1'u,1'u),(1'u,2'u)]
+]
+
+const SHAPE_O: TetronimoTemplate = [
+    [(1'u,1'u),(1'u,2'u),(2'u,1'u),(2'u,2'u)],
+    [(1'u,1'u),(1'u,2'u),(2'u,1'u),(2'u,2'u)],
+    [(1'u,1'u),(1'u,2'u),(2'u,1'u),(2'u,2'u)],
+    [(1'u,1'u),(1'u,2'u),(2'u,1'u),(2'u,2'u)]
+]
+
+const SHAPE_S: TetronimoTemplate = [
+    [(0'u,0'u),(0'u,1'u),(1'u,1'u),(1'u,2'u)],
+    [(0'u,1'u),(1'u,1'u),(1'u,0'u),(2'u,0'u)],
+    [(1'u,0'u),(1'u,1'u),(2'u,1'u),(2'u,2'u)],
+    [(0'u,2'u),(1'u,2'u),(1'u,1'u),(2'u,2'u)]      
+]
+
+const SHAPE_T: TetronimoTemplate = [
+    [(0'u,1'u),(1'u,1'u),(2'u,1'u),(1'u,0'u)],
+    [(1'u,0'u),(1'u,1'u),(1'u,2'u),(2'u,1'u)],
+    [(0'u,1'u),(1'u,1'u),(2'u,1'u),(1'u,2'u)],
+    [(0'u,1'u),(1'u,0'u),(1'u,1'u),(1'u,2'u)]
+]
+
+const SHAPE_Z: TetronimoTemplate = [
+    [(0'u,1'u),(0'u,2'u),(1'u,0'u),(1'u,1'u)],
+    [(0'u,0'u),(1'u,0'u),(1'u,1'u),(2'u,1'u)],
+    [(2'u,0'u),(2'u,1'u),(1'u,1'u),(1'u,2'u)],
+    [(0'u,1'u),(1'u,1'u),(1'u,2'u),(2'u,2'u)]
 ]
 
 type
@@ -51,20 +95,39 @@ proc isBlockAt(board: Board; x, y: uint): bool =
   assert(y < BOARD_HEIGHT)
   result = not (board[y][x] == gray)
 
+# This check in shape coordinates
 proc isOwnBlock(tetronimo: Tetronimo, x,y: uint): bool =
     result = tetronimo.shape[tetronimo.rotation.int].contains((x,y))
 
-proc isActiveTetronimoBlock(tetronimo: Tetronimo, x,y: uint): bool = 
-    var isActiveTetronimoBlock = false
+# This checks in board coordinates
+proc blockBelongsToTetronimo(tetronimo: Tetronimo, x,y: uint): bool =
+    var belongsToTetronimo = false
     for b in tetronimo.shape[tetronimo.rotation.int]:
         let boardCoord: Coord = (b.x + tetronimo.position.x, b.y + tetronimo.position.y)
-        if x == boardCoord.x and y == boardCoord.y:
-            isActiveTetronimoBlock = true
+        if boardCoord.x == x and boardCoord.y == y:
+            belongsToTetronimo = true
             break
+    result = belongsToTetronimo
 
-    result = isActiveTetronimoBlock
+proc canDropTetronimo(board: Board, tetronimo: Tetronimo): bool =
+    var canDrop = true
+    for b in tetronimo.shape[tetronimo.rotation.int]:
+        let boardCoord: Coord = (b.x + tetronimo.position.x, b.y + tetronimo.position.y)
+        if boardCoord.y < BOARD_HEIGHT-1:
+            if isBlockAt(board, boardCoord.x, boardCoord.y + 1):
+                if not blockBelongsToTetronimo(tetronimo, boardCoord.x, boardCoord.y + 1):
+                    canDrop = false
+                    break
+        else:
+            canDrop = false
+            break
+    result = canDrop
 
-proc applyGravity(board: var Board, activeTetronimo: var Tetronimo) =
+proc shouldGenerateNextTetronimo(board: Board, tetronimo: Tetronimo): bool = 
+    # If we can't drop further, it's time to generate a new block
+    result = not canDropTetronimo(board, tetronimo)
+
+proc applyGravity(board: var Board, tetronimo: var Tetronimo) =
     # First find full rows
     # Track the row indices that are full
     var fullRowIndices = newSeq[uint]()
@@ -94,34 +157,26 @@ proc applyGravity(board: var Board, activeTetronimo: var Tetronimo) =
             if not isBlockAt(board, uint(colIndex), uint(rowIndex)):
                 discard 
             else:
-                let nextRowIndex = rowIndex + 1
-                if not isBlockAt(board, uint(colIndex), uint(nextRowIndex)):
-                    board[nextRowIndex][colIndex] = board[rowIndex][colIndex]
-                    board[rowIndex][colIndex] = gray
-                    
+                if not blockBelongsToTetronimo(tetronimo, uint(colIndex), (uint)rowIndex):
+                    let nextRowIndex = rowIndex + 1
+                    if not isBlockAt(board, uint(colIndex), uint(nextRowIndex)):
+                        board[nextRowIndex][colIndex] = board[rowIndex][colIndex]
+                        board[rowIndex][colIndex] = gray
+
     # Also update the y position of our active tetronimo
-    activeTetronimo.position.y = activeTetronimo.position.y + 1
-                        
+    if canDropTetronimo(board, tetronimo):
+        # Clear the old position
+        for b in tetronimo.shape[tetronimo.rotation.int]:
+            let boardCoord: Coord = (b.x + tetronimo.position.x, b.y + tetronimo.position.y)
+            board[boardCoord.y][boardCoord.x] = gray
 
+        # Set the new position
+        for b in tetronimo.shape[tetronimo.rotation.int]:
+            let boardCoord: Coord = (b.x + tetronimo.position.x, b.y + tetronimo.position.y)
+            board[boardCoord.y + 1][boardCoord.x] = tetronimo.color
 
-proc shouldGenerateNextTetronimo(board: Board, tetronimo: Tetronimo): bool = 
-    var canDropFurther = true
-    for b in tetronimo.shape[tetronimo.rotation.int]:
-        let boardCoord: Coord = (b.x + tetronimo.position.x, b.y + tetronimo.position.y)
-        echo "Board coordinates for active tetronimo: ", boardCoord.x, ", ", boardCoord.y
-        if boardCoord.y < BOARD_HEIGHT-1:
-            if isOwnBlock(tetronimo, b.x, b.y+1):
-                break
+        tetronimo.position.y = tetronimo.position.y + 1           
 
-            echo "Checking isBlockAt"
-            if isBlockAt(board, boardCoord.x, boardCoord.y+1):
-                canDropFurther = false
-        else:
-            canDropFurther = false
-            
-    echo "shouldgenerate = ", canDropFurther
-    result = canDropFurther
-    result = false
 
 #
 # Helper
@@ -133,7 +188,6 @@ proc printBoard(board: Board) =
     for rowIndex in 0..BOARD_HEIGHT-1:
         var strRow = "|"
         for colIndex in 0..BOARD_WIDTH-1:
-          let b = board[rowIndex][colIndex]
           if board[rowIndex][colIndex] == gray:
             add(strRow, "0")
           else:
@@ -149,8 +203,6 @@ proc printBoard(board: Board) =
 
 
 proc moveRight(board: var Board, tetronimo: var Tetronimo) =
-    # Test if we have space to move right
-    echo "Tet p.y = ", tetronimo.position.y
     var canMoveRight = true
     for b in tetronimo.shape[tetronimo.rotation.int]:
         let boardCoord: Coord = (b.x + tetronimo.position.x, b.y + tetronimo.position.y)
@@ -158,36 +210,47 @@ proc moveRight(board: var Board, tetronimo: var Tetronimo) =
             canMoveRight = false
             break
         
-        if isBlockAt(board, boardCoord.x + 1, boardCoord.y):
+        # Ignore collisions with ourselves
+        if isBlockAt(board, boardCoord.x + 1, boardCoord.y) and not isOwnBlock(tetronimo, b.x, b.y):
             canMoveRight = false
             break
     
     if canMoveRight:
+        # Clear existing blocks
         for b in tetronimo.shape[tetronimo.rotation.int]:
             let boardCoord: Coord = (b.x + tetronimo.position.x, b.y + tetronimo.position.y)
             board[boardCoord.y][boardCoord.x] = gray
-            board[boardCoord.y][boardCoord.x + 1] = red
+
+        # Update new blocks
+        for b in tetronimo.shape[tetronimo.rotation.int]:
+            let boardCoord: Coord = (b.x + tetronimo.position.x, b.y + tetronimo.position.y)
+            board[boardCoord.y][boardCoord.x + 1] = tetronimo.color
         tetronimo.position.x = tetronimo.position.x + 1
-            
+        
 
 proc moveLeft(board: var Board, tetronimo: var Tetronimo) =
-    # Test if we have space to move left
     var canMoveLeft = true
     for b in tetronimo.shape[tetronimo.rotation.int]:
         let boardCoord: Coord = (b.x + tetronimo.position.x, b.y + tetronimo.position.y)
         if boardCoord.x == 0:
             canMoveLeft = false
             break
-        
-        if isBlockAt(board, boardCoord.x - 1, boardCoord.y):
+
+        # Ignore collisions with ourselves
+        if isBlockAt(board, boardCoord.x - 1, boardCoord.y) and not isOwnBlock(tetronimo, b.x, b.y):
             canMoveLeft = false
             break
     
     if canMoveLeft:
+        # Update existing blocks
         for b in tetronimo.shape[tetronimo.rotation.int]:
             let boardCoord: Coord = (b.x + tetronimo.position.x, b.y + tetronimo.position.y)
             board[boardCoord.y][boardCoord.x] = gray
-            board[boardCoord.y][boardCoord.x - 1] = red
+
+        # Update new blocks
+        for b in tetronimo.shape[tetronimo.rotation.int]:
+            let boardCoord: Coord = (b.x + tetronimo.position.x, b.y + tetronimo.position.y)
+            board[boardCoord.y][boardCoord.x - 1] = tetronimo.color
         tetronimo.position.x = tetronimo.position.x - 1
 
 
@@ -203,7 +266,6 @@ proc performRotation(board: var Board, tetronimo: var Tetronimo, newRotation: Te
     for b in tetronimo.shape[newRotation.int]:
         let boardCoord: Coord = (b.x + tetronimo.position.x, b.y + tetronimo.position.y)
         if not tetronimo.shape[oldRotation.int].contains((uint(b.x), uint(b.y))):
-            echo "Checking ", b.x, ",", b.y
             canRotate = not isBlockAt(board, boardCoord.x, boardCoord.y)
             if not canRotate:
                 echo "Can't rotate to new orientation. Blocks in the way"
@@ -219,7 +281,7 @@ proc performRotation(board: var Board, tetronimo: var Tetronimo, newRotation: Te
             board[boardCoord.y][boardCoord.x] = gray
         for b in tetronimo.shape[newRotation.int]:
             let boardCoord: Coord = (b.x + tetronimo.position.x, b.y + tetronimo.position.y)
-            board[boardCoord.y][boardCoord.x] = red
+            board[boardCoord.y][boardCoord.x] = tetronimo.color
             tetronimo.rotation = newRotation
 
 
@@ -269,22 +331,22 @@ proc generateTetronimoType(): TetronimoType =
 proc newTetronimo(): Tetronimo =
     case generateTetronimoType()
     of I:
-        result = (shape: SHAPE_I, position: (4'u, 0'u), rotation: R0)
+        result = (shape: SHAPE_I, position: (4'u, 0'u), rotation: R0, color: red)
     of J:
-        result = (shape: SHAPE_I, position: (4'u, 0'u), rotation: R0)
+        result = (shape: SHAPE_J, position: (4'u, 0'u), rotation: R0, color: light_green)
     of L:
-        result = (shape: SHAPE_I, position: (4'u, 0'u), rotation: R0)
+        result = (shape: SHAPE_L, position: (4'u, 0'u), rotation: R0, color: green)
     of O:
-        result = (shape: SHAPE_I, position: (4'u, 0'u), rotation: R0)
+        result = (shape: SHAPE_O, position: (4'u, 0'u), rotation: R0, color: blue)
     of S:
-        result = (shape: SHAPE_I, position: (4'u, 0'u), rotation: R0)
+        result = (shape: SHAPE_S, position: (4'u, 0'u), rotation: R0, color: orange)
     of T:
-        result = (shape: SHAPE_I, position: (4'u, 0'u), rotation: R0)
+        result = (shape: SHAPE_T, position: (4'u, 0'u), rotation: R0, color: yellow)
     of Z:
-        result = (shape: SHAPE_I, position: (4'u, 0'u), rotation: R0)
+        result = (shape: SHAPE_Z, position: (4'u, 0'u), rotation: R0, color: purple)
 
 proc insertTetronimo(board: var Board): Tetronimo =
     let tetronimo = newTetronimo()
     for b in tetronimo.shape[0]:
-        board[b.y + tetronimo.position.y][b.x + tetronimo.position.x] = red
+        board[b.y + tetronimo.position.y][b.x + tetronimo.position.x] = tetronimo.color
     result = tetronimo

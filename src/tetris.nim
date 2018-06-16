@@ -12,8 +12,9 @@ var
   render: RendererPtr
   board: Board
   activeTetronimo: Tetronimo
+  immediateMode: bool
 
-window = createWindow("Tetris", 100, 100, 320, 640, SDL_WINDOW_SHOWN)
+window = createWindow("Tetris", 100, 100, 340, 680, SDL_WINDOW_SHOWN)
 render = createRenderer(window, -1, Renderer_Accelerated or Renderer_PresentVsync or Renderer_TargetTexture)
 let texture = render.loadTexture("tetris.png")
 
@@ -41,6 +42,8 @@ board = [
 ]
 
 activeTetronimo = newTetronimo()
+immediateMode = false
+
 
 proc getBlockTexture(color: BlockColor): Rect =
   case color
@@ -66,7 +69,7 @@ activeTetronimo = insertTetronimo(board)
 
 proc drawBlock(color: BlockColor, x,y: uint) =
   var source = getBlockTexture(color)
-  var dest = rect(BLOCK_WIDTH * cint(x), BLOCK_HEIGHT * cint(y), BLOCK_WIDTH, BLOCK_HEIGHT)
+  var dest = rect(BLOCK_WIDTH * cint(x) + (cint(x) * cint(MARGIN)), BLOCK_HEIGHT * cint(y) + (cint(y) * cint(MARGIN)), BLOCK_WIDTH, BLOCK_HEIGHT)
   render.copyEx(texture, source, dest, angle = 0.0, center = nil, flip = SDL_FLIP_NONE)
 
 proc drawBoard(board: Board) =
@@ -87,7 +90,7 @@ proc handleInput(key: Scancode) =
   elif key == SDL_SCANCODE_LEFT:
     moveLeft(board, activeTetronimo)
   elif key == SDL_SCANCODE_SPACE:
-    echo "Dropping blocks"
+    immediateMode = true
 
 var
   event = sdl2.defaultEvent
@@ -109,13 +112,20 @@ while runGame:
 
   let dt = fpsman.getFramerate() / 1000 
   totalDelta = totalDelta + dt
-  if totalDelta >= 0.5:
+
+  if immediateMode:
+    while not shouldGenerateNextTetronimo(board, activeTetronimo):
+      applyGravity(board, activeTetronimo)
+    immediateMode = false
+
+  elif totalDelta >= 0.2:
     totalDelta = 0
     applyGravity(board, activeTetronimo)
     if shouldGenerateNextTetronimo(board, activeTetronimo):
+      immediateMode = false
       activeTetronimo = insertTetronimo(board)
 
-  render.setDrawColor 110,132,174,255
+  render.setDrawColor 239,239,239,255
   render.clear
   drawBoard(board)
   render.present
