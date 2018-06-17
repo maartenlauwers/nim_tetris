@@ -15,9 +15,6 @@ type
 type
     TetronimoRotation = enum
         R0, R1, R2, R3
-        
-type 
-    TetronimoPosition = tuple[x,y: uint]
 
 type 
     TetronimoType = enum
@@ -35,8 +32,8 @@ type
 type
     Coord = tuple[x, y: uint]
 
-type
-    ShapePosition = tuple[x,y: uint]
+var score: uint = 0
+var nextTetronimo: Tetronimo
 
 const SHAPE_I: TetronimoTemplate = [
     [(1'u,0'u),(1'u,1'u),(1'u,2'u),(1'u,3'u)],
@@ -86,9 +83,6 @@ const SHAPE_Z: TetronimoTemplate = [
     [(2'u,0'u),(2'u,1'u),(1'u,1'u),(1'u,2'u)],
     [(0'u,1'u),(1'u,1'u),(1'u,2'u),(2'u,2'u)]
 ]
-
-type
-    Block = tuple[x,y: uint, color: BlockColor]
 
 proc isBlockAt(board: Board; x, y: uint): bool =
   assert(x < BOARD_WIDTH)
@@ -140,7 +134,7 @@ proc applyGravity(board: var Board, tetronimo: var Tetronimo) =
                 break
         
         if isFull:
-            echo "Found full row at index ", rowIndex
+            score = score + 100
             fullRowIndices.add(uint(rowIndex))
     
     # Clear full lines
@@ -348,8 +342,13 @@ proc newTetronimo(): Tetronimo =
     of Z:
         result = (shape: SHAPE_Z, position: (4'u, 0'u), rotation: R0, color: purple)
 
+proc prepareNextTetronimo() =
+    nextTetronimo = newTetronimo()
+
 proc insertTetronimo(board: var Board): Tetronimo =
     let tetronimo = newTetronimo()
     for b in tetronimo.shape[0]:
         board[b.y + tetronimo.position.y][b.x + tetronimo.position.x] = tetronimo.color
+    # 10 points for each new block generated
+    score = score + 10
     result = tetronimo
