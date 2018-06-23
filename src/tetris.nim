@@ -8,44 +8,54 @@ import strutils
 import sdl2, sdl2/gfx, sdl2/image#, sdl2.ttf
 discard sdl2.init(INIT_EVERYTHING)
 
+const SCREEN_WIDTH: cint = 344
+const SCREEN_HEIGHT: cint = 680
+
 var
   window: WindowPtr
   render: RendererPtr
   board: Board
   activeTetronimo: Tetronimo
   immediateMode: bool
+  gameOver: bool
+  requiredDelta: float
 
-window = createWindow("Tetris", 100, 100, 344, 680, SDL_WINDOW_SHOWN)
+window = createWindow("Tetris", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN)
 render = createRenderer(window, -1, Renderer_Accelerated or Renderer_PresentVsync or Renderer_TargetTexture)
 let texture = render.loadTexture("tetris.png")
 initTTF()
 
-board = [
-  [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
-  [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
-  [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
-  [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
-  [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
-  [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
-  [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
-  [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
-  [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
-  [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
-  [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
-  [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
-  [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
-  [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
-  [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
-  [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
-  [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
-  [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
-  [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
-  [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray]
-]
+# Prep game
 
-activeTetronimo = newTetronimo()
-immediateMode = false
-var requiredDelta: float = 0.2
+proc newGame() =
+  activeTetronimo = newTetronimo()
+  immediateMode   = false
+  gameOver        = false
+  requiredDelta   = 0.2
+  score           = 0
+  board = [
+    [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
+    [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
+    [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
+    [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
+    [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
+    [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
+    [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
+    [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
+    [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
+    [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
+    [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
+    [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
+    [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
+    [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
+    [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
+    [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
+    [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
+    [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
+    [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray],
+    [gray,gray,gray,gray,gray,gray,gray,gray,gray,gray]
+  ]
+  activeTetronimo = insertTetronimo(board)
 
 proc getBlockTexture(color: BlockColor): Rect =
   case color
@@ -66,9 +76,6 @@ proc getBlockTexture(color: BlockColor): Rect =
   else:
     result = rect(32, 64, BLOCK_WIDTH, BLOCK_HEIGHT)
 
-# Prep game
-activeTetronimo = insertTetronimo(board)
-
 proc drawBlock(color: BlockColor, x,y: uint) =
   var source = getBlockTexture(color)
   var dest = rect(BLOCK_WIDTH * cint(x) + (cint(x) * cint(MARGIN)) + 2, BLOCK_HEIGHT * cint(y) + (cint(y) * cint(MARGIN)), BLOCK_WIDTH, BLOCK_HEIGHT)
@@ -81,19 +88,24 @@ proc drawBoard(board: Board) =
       drawBlock(b, uint(colIndex), uint(rowIndex))
 
 proc handleInput(key: Scancode) =
-  if key == SDL_SCANCODE_UP:
-    let newRotation = rotateRight(activeTetronimo)
-    performRotation(board, activeTetronimo, newRotation)
-  elif key == SDL_SCANCODE_DOWN:
-    let newRotation = rotateLeft(activeTetronimo)
-    performRotation(board, activeTetronimo, newRotation)
-  elif key == SDL_SCANCODE_RIGHT:
-    moveRight(board, activeTetronimo)
-  elif key == SDL_SCANCODE_LEFT:
-    moveLeft(board, activeTetronimo)
-  elif key == SDL_SCANCODE_SPACE:
-    immediateMode = true
-    requiredDelta = 0.02
+  if not gameOver:
+    if key == SDL_SCANCODE_UP:
+      let newRotation = rotateRight(activeTetronimo)
+      performRotation(board, activeTetronimo, newRotation)
+    elif key == SDL_SCANCODE_DOWN:
+      let newRotation = rotateLeft(activeTetronimo)
+      performRotation(board, activeTetronimo, newRotation)
+    elif key == SDL_SCANCODE_RIGHT:
+      moveRight(board, activeTetronimo)
+    elif key == SDL_SCANCODE_LEFT:
+      moveLeft(board, activeTetronimo)
+    elif key == SDL_SCANCODE_SPACE:
+      immediateMode = true
+      requiredDelta = 0.02
+  else:
+    if key == SDL_SCANCODE_R:
+      newGame()
+  
 
 var
   event = sdl2.defaultEvent
@@ -101,6 +113,8 @@ var
   fpsman: FpsManager
   totalDelta: float = 0
 fpsman.init
+
+newGame()
 
 while runGame:
   while pollEvent(event):
@@ -122,18 +136,26 @@ while runGame:
   #   immediateMode = false
   #   requiredDelta = 0.2
 
-  if totalDelta >= requiredDelta:
-    totalDelta = 0
-    applyGravity(board, activeTetronimo)
-    if shouldGenerateNextTetronimo(board, activeTetronimo):
-      immediateMode = false
-      requiredDelta = 0.2
-      activeTetronimo = insertTetronimo(board)
-      #prepareNextTetronimo()
-
   render.setDrawColor 239,239,239,255
   render.clear
+
+  if not gameOver:
+    if totalDelta >= requiredDelta:
+      totalDelta = 0
+      applyGravity(board, activeTetronimo)
+      if shouldGenerateNextTetronimo(board, activeTetronimo):
+        immediateMode = false
+        requiredDelta = 0.2
+        activeTetronimo = insertTetronimo(board)
+        if not canDropTetronimo(board, activeTetronimo):
+          # Game over
+          gameOver = true
+
   drawBoard(board)
+
+  if gameOver:
+    renderText(render, fontHuge, "GAME OVER", cint(cint(SCREEN_WIDTH)/2) - 100, cint(cint(SCREEN_HEIGHT)/2), color(0,0,0,255))
+
   let strScore = intToStr(int(score))
   renderText(render, font, "Score", 8, 8, color(123,205,184,255))
   renderText(render, fontSmall, strScore, 8, 32, color(84,84,84,255))

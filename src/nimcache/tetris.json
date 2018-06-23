@@ -1,5 +1,5 @@
 {"compile":[
-["/Users/mlauwers/Development/nim/nim_tetris/src/nimcache/tetris_tetris.c", "clang -c  -w  -I/usr/local/Cellar/nim/0.18.0_1/nim/lib -o /Users/mlauwers/Development/nim/nim_tetris/src/nimcache/tetris_tetris.o /Users/mlauwers/Development/nim/nim_tetris/src/nimcache/tetris_tetris.c"]
+]
 ],
 "link":[
 "/Users/mlauwers/Development/nim/nim_tetris/src/nimcache/tetris_tetris.o",

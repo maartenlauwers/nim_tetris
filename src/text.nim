@@ -2,6 +2,7 @@ import sdl2, sdl2/gfx, sdl2/image, sdl2.ttf
 
 var font: FontPtr
 var fontSmall: FontPtr
+var fontHuge: FontPtr
 
 type
     SDLException = object of Exception
@@ -14,8 +15,10 @@ proc initTTF() =
     sdlFailIf(ttfInit() == SdlError): "SDL2 TTF initialization failed"
     font = openFont("Roboto-Light.ttf", 20)
     fontSmall = openFont("Roboto-Light.ttf", 16)
+    fontHuge = openFont("Roboto-Bold.ttf", 32)
     sdlFailIf font.isNil: "Failed to load font"
     sdlFailIf fontSmall.isNil: "Failed to load font"
+    sdlFailIf fontHuge.isNil: "Failed to load font"
     
 proc renderText(renderer: RendererPtr, font: FontPtr, text: string, x, y: cint, color: Color) =
     let surface = font.renderUtf8Blended(text.cstring, color)
