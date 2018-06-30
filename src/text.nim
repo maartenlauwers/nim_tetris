@@ -13,9 +13,9 @@ template sdlFailIf(cond: typed, reason: string) =
 
 proc initTTF() =
     sdlFailIf(ttfInit() == SdlError): "SDL2 TTF initialization failed"
-    font = openFont("Roboto-Light.ttf", 20)
-    fontSmall = openFont("Roboto-Light.ttf", 16)
-    fontHuge = openFont("Roboto-Bold.ttf", 32)
+    font = openFont("../assets/Roboto-Light.ttf", 20)
+    fontSmall = openFont("../assets/Roboto-Light.ttf", 16)
+    fontHuge = openFont("../assets/Roboto-Bold.ttf", 32)
     sdlFailIf font.isNil: "Failed to load font"
     sdlFailIf fontSmall.isNil: "Failed to load font"
     sdlFailIf fontHuge.isNil: "Failed to load font"

@@ -3043,11 +3043,11 @@ appendString(T6_, T8_);
 	}
 	LA4_: ;
 	nimln_(16, "text.nim");
-	font_3k39biBLQJp6Cgh125aSQkA = Dl_174613_("Roboto-Light.ttf", ((int) 20));
+	font_3k39biBLQJp6Cgh125aSQkA = Dl_174613_("../assets/Roboto-Light.ttf", ((int) 20));
 	nimln_(17, "text.nim");
-	fontSmall_YbuwKYNiKMQqg6Ag5ychdQ = Dl_174613_("Roboto-Light.ttf", ((int) 16));
+	fontSmall_YbuwKYNiKMQqg6Ag5ychdQ = Dl_174613_("../assets/Roboto-Light.ttf", ((int) 16));
 	nimln_(18, "text.nim");
-	fontHuge_NYQOMnijVneBWh4jGH45Ow = Dl_174613_("Roboto-Bold.ttf", ((int) 32));
+	fontHuge_NYQOMnijVneBWh4jGH45Ow = Dl_174613_("../assets/Roboto-Bold.ttf", ((int) 32));
 	nimln_(19, "text.nim");
 	{
 		tyObject_SDLException_rDleDeqfqeKBWnmgtBDcCg* e_2;
@@ -3575,7 +3575,7 @@ nimRegisterGlobalMarker(TM_wb2M869aF7F4XAtLMdG9cNOw_47);
 	nimln_(24, "tetris.nim");
 	render_eomdUYXdRHV3qofmMcQXsg = Dl_168811_(window_bcV9cH9cz5aDHcWv0qT6P9bTQ, ((int) -1), ((NI32) 14));
 	nimln_(25, "tetris.nim");
-	texture_2i9cIV2c7Ae9a9bdqnbkbVUdA = Dl_173621_(render_eomdUYXdRHV3qofmMcQXsg, "tetris.png");
+	texture_2i9cIV2c7Ae9a9bdqnbkbVUdA = Dl_173621_(render_eomdUYXdRHV3qofmMcQXsg, "../assets/tetris.png");
 	nimln_(26, "tetris.nim");
 	initTTF_msPph4vm2XRapp1gZhIExg_2();
 	nimln_(111, "tetris.nim");

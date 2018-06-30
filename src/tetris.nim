@@ -22,7 +22,7 @@ var
 
 window = createWindow("Tetris", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN)
 render = createRenderer(window, -1, Renderer_Accelerated or Renderer_PresentVsync or Renderer_TargetTexture)
-let texture = render.loadTexture("tetris.png")
+let texture = render.loadTexture("../assets/tetris.png")
 initTTF()
 
 # Prep game
